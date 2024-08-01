@@ -100,7 +100,7 @@
 import React, { useEffect, useState } from "react";
 import PropertyCard from "./PropertyCard";
 import styled from "styled-components";
-import { Pagination, Select } from "antd";
+import { Pagination, Select,Spin } from "antd";
 
 const PropertyListContainer = styled.div`
   display: flex;
@@ -119,8 +119,10 @@ const PropertyList = () => {
     rooms: "",
     amenities: [],
   });
+  const [loading, setLoading] = useState(false);
 
   const fetchProperties = async (page = 1, pageSize = 25) => {
+    setLoading(true);
     try {
       const response = await fetch(
         `https://bayut.p.rapidapi.com/properties/list?locationExternalIDs=${
@@ -146,6 +148,9 @@ const PropertyList = () => {
       setFilteredProperties(data?.hits || []);
     } catch (error) {
       console.error("Error fetching properties:", error);
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -247,14 +252,18 @@ const PropertyList = () => {
         </select> */}
       </div>
 
-      <PropertyListContainer>
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10rem' }}>
+          <Spin size="large" />
+        </div>):(
+        <PropertyListContainer>
         {filterdProperties?.length ?
         filterdProperties?.map((property) => (
           <PropertyCard key={property.id} property={property} />
         )):
         <p className="no-data">There is no Data Based on Your Filters</p>
       }
-      </PropertyListContainer>
+      </PropertyListContainer>)}
       <Pagination
       className="pagination"
         current={properties?.page}
