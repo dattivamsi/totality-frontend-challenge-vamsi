@@ -1,106 +1,7 @@
-// import React, { useEffect, useState } from "react";
-// import PropertyCard from "./PropertyCard";
-// import styled from "styled-components";
-// import { Pagination } from "antd";
-
-// const PropertyListContainer = styled.div`
-//   display: flex;
-//   flex-wrap: wrap;
-//   gap: 40px;
-//   padding: 2rem;
-// `;
-
-// const FilterSection = styled.div`
-//   margin-bottom: 20px;
-// `;
-
-// const PropertyList = () => {
-//   const [properties, setProperties] = useState({});
-//   const [filters, setFilters] = useState({
-//     location: '',
-//     minPrice: '',
-//     maxPrice: '',
-//     bedrooms: '',
-//     amenities: []
-//   });
-
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [totalPages, setTotalPages] = useState(1);
-
-//   console.log(properties)
-
-//   useEffect(() => {
-//     const fetchProperties = async () => {
-//       try {
-//         const response = await fetch(
-//           "https://bayut.p.rapidapi.com/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=2&page=0&lang=en&sort=city-level-score&rentFrequency=monthly&categoryExternalID=4",
-//           {
-//             method: "GET",
-//             headers: {
-//               "x-rapidapi-host": "bayut.p.rapidapi.com",
-//               "x-rapidapi-key":
-//                 "82892125afmshe27717ee321ef69p12f83cjsna90e85c77d68",
-//             },
-//           }
-//         );
-//         const data = await response.json();
-//         console.log(data);
-//         setProperties(data || {});
-//       } catch (error) {
-//         console.error("Error fetching properties:", error);
-//       }
-//     };
-
-//     fetchProperties();
-//   }, []);
-
-//   const handlePagination = async (page,pageSize) =>{
-//     console.log(page);
-//     try {
-//       const response = await fetch(
-//         `https://bayut.p.rapidapi.com/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=${pageSize}&page=${page}&lang=en&sort=city-level-score&rentFrequency=monthly&categoryExternalID=4`,
-//         {
-//           method: "GET",
-//           headers: {
-//             "x-rapidapi-host": "bayut.p.rapidapi.com",
-//             "x-rapidapi-key":
-//               "82892125afmshe27717ee321ef69p12f83cjsna90e85c77d68",
-//           },
-//         }
-//       );
-//       const data = await response.json();
-//       console.log(data);
-//       setProperties(data || {});
-//     } catch (error) {
-//       console.error("Error fetching properties:", error);
-//     }
-
-//   }
-
-//   return (
-//     <div>
-//       <FilterSection>{/* Add filter inputs and handlers */}</FilterSection>
-//       <PropertyListContainer>
-//         {properties?.hits?.map((property) => (
-//           <PropertyCard key={property.id} property={property} />
-//         ))}
-//       </PropertyListContainer>
-//       <Pagination
-//         current={properties?.page}
-//         total={properties?.nbPages}
-//         pageSize={properties?.hitsPerPage}
-//         onChange={(page,pageSize) => handlePagination(page,pageSize)}
-//       />
-//     </div>
-//   );
-// };
-
-// export default PropertyList;
-
 import React, { useEffect, useState } from "react";
 import PropertyCard from "./PropertyCard";
 import styled from "styled-components";
-import { Pagination, Select,Spin } from "antd";
+import { Pagination, Select, Spin } from "antd";
 
 const PropertyListContainer = styled.div`
   display: flex;
@@ -127,9 +28,7 @@ const PropertyList = () => {
       const response = await fetch(
         `https://bayut.p.rapidapi.com/properties/list?locationExternalIDs=${
           filters.location || 5002
-        }&purpose=for-rent&hitsPerPage=${pageSize}&page=${
-          page - 1
-        }&lang=en&sort=city-level-score&rentFrequency=monthly&categoryExternalID=4&minPrice=${
+        }&purpose=for-rent&hitsPerPage=${pageSize}&page=${page}&lang=en&sort=city-level-score&rentFrequency=monthly&categoryExternalID=4&minPrice=${
           filters.minPrice
         }&maxPrice=${filters.maxPrice}&bedrooms=${
           filters.bedrooms
@@ -148,9 +47,8 @@ const PropertyList = () => {
       setFilteredProperties(data?.hits || []);
     } catch (error) {
       console.error("Error fetching properties:", error);
-    }
-    finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -208,14 +106,9 @@ const PropertyList = () => {
   return (
     <div>
       <div className="filtered-container">
-        
         <div>
           <label htmlFor="price">price:</label>
-          <select
-            id="price"
-            
-            onChange={(e) => handleFilterChange(e, "price")}
-          >
+          <select id="price" onChange={(e) => handleFilterChange(e, "price")}>
             <option value=""></option>
             <option value="lowtohigh">Min Price</option>
             <option value="highttolow">Max Price</option>
@@ -223,11 +116,7 @@ const PropertyList = () => {
         </div>
         <div>
           <label htmlFor="rooms">Bed Rooms</label>
-          <select
-          id="rooms"
-            
-            onChange={(e) => handleFilterChange(e, "rooms")}
-          >
+          <select id="rooms" onChange={(e) => handleFilterChange(e, "rooms")}>
             <option value=""></option>
             <option value="0">0</option>
             <option value="1">1</option>
@@ -241,7 +130,7 @@ const PropertyList = () => {
             type="text"
             name="location"
             value={filters.location}
-            onChange={(e)=>handleFilterChange(e,"location")}
+            onChange={(e) => handleFilterChange(e, "location")}
           />
         </div>
         {/* <label>Amenities:</label>
@@ -253,19 +142,29 @@ const PropertyList = () => {
       </div>
 
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10rem' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "10rem",
+          }}
+        >
           <Spin size="large" />
-        </div>):(
+        </div>
+      ) : (
         <PropertyListContainer>
-        {filterdProperties?.length ?
-        filterdProperties?.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        )):
-        <p className="no-data">There is no Data Based on Your Filters</p>
-      }
-      </PropertyListContainer>)}
+          {filterdProperties?.length ? (
+            filterdProperties?.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))
+          ) : (
+            <p className="no-data">There is no Data Based on Your Filters</p>
+          )}
+        </PropertyListContainer>
+      )}
       <Pagination
-      className="pagination"
+        className="pagination"
         current={properties?.page}
         total={properties?.nbPages}
         pageSize={properties?.hitsPerPage}
